@@ -1,22 +1,21 @@
 from django.shortcuts import render,redirect
-from django.contrib.auth.models import User
 from .forms import CreateUserForm
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from .decorators import unauthenticated_user
 from .models import Account,Meet,MeetParticipant
 from django.contrib.auth.decorators import login_required
-from datetime import date, timedelta
+from datetime import date
 import plotly.figure_factory as ff
-from .utils import overlap,rememberMeet,test
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-from django.http import HttpResponse
+from .utils import test
 import plotly
 import datetime
+from django.contrib import messages
+from datetimerange import DateTimeRange
+
 # Create your views here.
 
 def index(request):
-    test()
     return render(request,'index.html')
 
 
@@ -80,13 +79,9 @@ def dashboard(request):
         meetDict.update({"finish_date":finish_date})
         result.append(meetDict)
 
-    start_grant = str(date.today()) + " " + "00:00"
-    finish_grant = str(date.today()) + " " + "23:59"
 
     today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
     today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
-  #  today = Meet.objects.get(meetparticipant=accountInfo, start_date__range=(today_min, today_max))print(today)
-
     
 
     members = MeetParticipant.objects.filter(participant_id = request.user.id).values()
@@ -97,7 +92,6 @@ def dashboard(request):
         "Finish" : "Finish"
     }
     todayData = []
-    print(today_min ,"-",today_max)
     for i in test:
         i = str(i).replace("(","")
         i = i.replace(",)","")
@@ -114,8 +108,6 @@ def dashboard(request):
         finish_hours = finish.replace(", tzinfo=<UTC>)}]>","")[12:16].replace(",",":").strip()
         finish_minutes = finish.replace(", tzinfo=<UTC>)}]>","")[16:19].strip()
         
-        print(start_hours+start_minutes)
-        print(finish_hours+finish_minutes)
         
         
         todayDict.update({"Task":title})
@@ -140,40 +132,21 @@ def dashboard(request):
     
     scriptfile =plotly.offline.plot(fig, output_type="div", show_link=False, link_text=False)
     
-    savedTimeDateList = []
-    savedTimeDateDict = {
-        'start_date' : 'start_date',
-        'finish_date' : 'finish_date'
-    }
-    
-    dic1 = {
-        "start_date":"start_date",
-        "finish_date":"finish_date"
-    }
-    dic2 = {
-        "start_date":"start_date",
-        "finish_date":"finish_date"
-    }
 
-
-    print(savedTimeDateList)
     if request.method == 'POST':
-        startDate = request.POST['meet-date-start'] +" " +request.POST['meet-time-start']
-        finishDate = request.POST['meet-date-finish']+ " " + request.POST['meet-time-finish']
+        startDate = request.POST['meet-date-start'] +"T" +request.POST['meet-time-start'] + "+0900"
+        finishDate = request.POST['meet-date-finish']+ "T" + request.POST['meet-time-finish'] +"+0900"
+        timeRangeGet = DateTimeRange(startDate,finishDate)
         test = True
         for t in meets:
             meet_date = t.get('start_date')
             finish_date = t.get('finish_date')
-            dic1.update({"start_date":startDate})
-            dic1.update({"finish_date":finishDate})
-            dic2.update({"start_date":startDate})
-            dic2.update({"finish_date":finishDate})
-            control = overlap(dic1,dic2)
+            timeRangeData = DateTimeRange(meet_date,finish_date)
+            control = timeRangeData in timeRangeGet
             if control == True:
-                pass
-            else:
                 test = False
-
+                break
+                
         if test == True:
             meet_create = Meet.objects.create(
                 creater_account = accountInfo,
@@ -185,9 +158,9 @@ def dashboard(request):
                 summary = request.POST["summary"],
             )
             meet_create.save()
-            return redirect('dashboard')
+            return redirect('meetDetails', title=request.POST["title"])
         else:
-            print("Çakışma Yaşandı")
+            messages.error(request, 'Aynı Saatte Toplantınız Bulunmakta')
 
     context = {'accountInfo':accountInfo,'meets':result,'scriptfile':scriptfile,"today_meet":todayData}
 
@@ -196,15 +169,14 @@ def dashboard(request):
     return render(request,"dashboard.html",context)
 
 @login_required(login_url='login')
-def meetDetails(request,id):
+def meetDetails(request,title):
     accountInfo = Account.objects.get(user=request.user)
-    meets = Meet.objects.filter(id=id).values()
-    meeting = Meet.objects.get(id=id)
+    meets = Meet.objects.filter(title=title).values()
+    meeting = Meet.objects.get(title=title)
     members = []
     for member in meeting.get_participant():
         members.append(member)
     
-    print(members)
     context = {'accountInfo':accountInfo,'meets':meets,'members':members}
     return render(request,"meets.html",context)
 

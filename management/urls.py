@@ -10,7 +10,7 @@ urlpatterns = [
     path('register/',views.registerPage,name="register"),
     path('logout/',views.logoutUser,name="logout"),
     path('calendar/',views.calendar,name="calendar"),
-    path('meetDetails/<id>',views.meetDetails,name="meetDetails"),
+    path('meetDetails/<title>',views.meetDetails,name="meetDetails"),
 
 
 ]

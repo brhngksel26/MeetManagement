@@ -1,4 +1,3 @@
-from .utils import rememberMeet
 from .models import Meet,MeetParticipant
 from django.core.mail import send_mail
 from django.utils.timezone import now

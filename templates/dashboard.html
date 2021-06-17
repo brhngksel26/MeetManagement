@@ -131,20 +131,29 @@
                                     <h6>
                                         Departman = {{accountInfo.department}}
                                     </h6>
+                                    {% if messages %}
+                                    <ul class="messages">
+                                        {% for message in messages %}
+                                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
                             <ul class="nav nav-tabs" id="myTab" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Toplantılar</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Toplantı Ekle</a>
-                                </li>
+                                    <a class="nav-link active" href="#" data-toggle="modal" data-target="#product">Toplantı Ekle</a>       
+                                                             </li>
                             </ul>
                         </div>
                     </div>
+                    
                     <div class="col-md-2">
                         <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"/>
                     </div>
                 </div>
+                
                 <div class="row">
                     <div class="col-md-4">
                         <div class="profile-work">
@@ -158,7 +167,7 @@
                            
                         </div>
                     </div>
-                    
+                  
                     <div class="col-md-8">
 
                         <div class="tab-content profile-tab" id="myTabContent">
@@ -174,7 +183,7 @@
                                                     {
                                                         title : '{{meet.title}}',
                                                         start : '{{meet.start_date}}',
-                                                        url :  "http://127.0.0.1:8000/meetDetails/" + '{{meet.id}}',
+                                                        url :  "http://127.0.0.1:8000/meetDetails/" + '{{meet.title}}',
                                                          
                                                         
                                                     },
@@ -201,81 +210,77 @@
                                 
                             </div>
 
+                                    <div class="modal fade" id="product">
+                                        <div class="modal-dialog modal-sm">
+                                            <div class="modal-content">
+                                              <div class="modal-header">
+                                                  <h4>Toplantı Ekle</h4>
+                                                </div>   
+                                                <form method="POST">
 
-                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                <form method="POST">
-                                    {% csrf_token %}
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>Başlık</label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <input type="text" class="form-control" id="title" placeholder="Başlık Giriniz:" name="title">
-                                        </div>
-                                    </div><br><br>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>Link</label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <input type="text" class="form-control" id="meet_links" placeholder="Link Giriniz:" name="meet_links">
-                                        </div>
-                                    </div><br><br>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>Ofis / Online</label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <select name="meet_location" class="form-control">
-                                                <option name="meet_location" value="Office">Office</option>
-                                                <option name="meet_location" value="Online">Online</option>
-                                            </select> 
-                                        </div>
-                                    </div><br><br>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>Başlangıç Tarihi</label>
-                                        </div>
+                                                        {% csrf_token %}
+                                                    <div class="row">
+                                                        <div class="modal-body">
+                                                            <label>Başlık</label>
+                                                            <input type="text" class="form-control" id="title" placeholder="Başlık Giriniz:" name="title">
 
-                                            <input type="date" id="meet-date-start" name="meet-date-start">
-                                            <input type="text" placeholder="22:00"  id="meet-time-start" name="meet-time-start">
-
-                                             
-
-                                        </div>
-                                      
-                                        </div>
-                                    </div><br><br>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>Bitiş Tarihi</label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <input type="date" id="meet-date-finish" name="meet-date-finish"> 
-                                            <input type="text" placeholder="22:00"  id="meet-time-finish" name="meet-time-finish">
-                                        </div>
-                                    </div><br><br>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>Açıklama</label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <textarea id="summary" name="summary"></textarea>
-                                        </div>
-                                    </div><br><br>
-                                    <div class="row gutters">
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                            <div class="text-right">
-                                                <button type="submit" class="btn btn-black">Oluştur</button>
+                                                        </div>
+                                                        
+                                                    </div><br><br>
+                                                    <div class="row">
+                                                        <div class="modal-body">
+                                                            <label>Link</label>
+                                                            <input type="text" class="form-control" id="meet_links" placeholder="Link Giriniz:" name="meet_links">
+                                                        </div>
+                                                    </div><br><br>
+                                                    <div class="row">
+                                                        <div class="modal-body">
+                                                            <label>Ofis / Online</label>
+                                                            <select name="meet_location" class="form-control">
+                                                                <option name="meet_location" value="Office">Office</option>
+                                                                <option name="meet_location" value="Online">Online</option>
+                                                            </select> 
+                                                        </div>
+                                                    </div><br><br>
+                                                    
+                                                    <div class="row">
+                                                        <div class="modal-body">
+                                                            <label>Başlangıç Tarihi</label><br>
+                                                            <input type="date" id="meet-date-start" name="meet-date-start">
+                                                            <input type="text" placeholder="22:00"  id="meet-time-start" name="meet-time-start">
+                                                    </div></div>
+                                                    
+                                                        
+                                                    <br><br>
+                                                    <div class="row">
+                                                        <div class="modal-body">
+                                                            <label>Bitiş Tarihi</label><br>
+                                                            <input type="date" id="meet-date-finish" name="meet-date-finish"> 
+                                                            <input type="text" placeholder="22:00"  id="meet-time-finish" name="meet-time-finish">
+                                                        </div>
+                                                    </div><br><br>
+                                                    <div class="row">
+                                                        <div class="modal-body">
+                                                            <label>Açıklama</label><br>
+                                                            <textarea id="summary" name="summary"></textarea>
+                                                        </div>
+                                                    </div><br><br>
+                                                    <div class="row gutters">
+                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                                            <div class="text-right">
+                                                                <button type="submit" class="btn btn-black">Oluştur</button>
+                                                            </div>
+                                                        </div>  
+                                                    </div>
+                                                </form>                              
+                                                
                                             </div>
-                                        </div>  
+                                            
+                                        </div>
                                     </div>
-                                </form>
-                                       
-                                        
-                               
-                            </div>
+
+                                    
+                            
                         </div>
                     </div>
                 </div>
