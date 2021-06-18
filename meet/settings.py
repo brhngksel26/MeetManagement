@@ -73,7 +73,7 @@ TEMPLATES = [
     },
 ]
 
-
+WSGI_APPLICATION = 'meet.wsgi.application'
 
 
 # Database
