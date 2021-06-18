@@ -20,8 +20,10 @@ cryptography==3.4.7
 cycler==0.10.0
 daphne==3.0.2
 DateTimeRange==1.1.0
+dj-database-url==0.5.0
 Django==3.2.4
 django-crontab==0.7.1
+django-heroku==0.3.1
 gunicorn==20.1.0
 hiredis==2.0.0
 hyperlink==21.0.0
@@ -39,6 +41,7 @@ packaging==20.9
 Pillow==8.2.0
 plotly==4.14.3
 prompt-toolkit==3.0.19
+psycopg2==2.9.1
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.20
@@ -60,4 +63,6 @@ typing-extensions==3.10.0.0
 urllib3==1.26.5
 vine==5.0.0
 wcwidth==0.2.5
+websocket-client==1.1.0
+whitenoise==5.2.0
 zope.interface==5.4.0
