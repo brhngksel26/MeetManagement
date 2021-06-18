@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.urls import reverse
 
 class Account(models.Model):
     DEPARTMENT = (
@@ -56,3 +55,7 @@ class MeetParticipant(models.Model):
     def get_meet(self):
         meet = list(self.meet_set.all())
         return meet
+
+
+
+

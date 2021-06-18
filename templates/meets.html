@@ -131,6 +131,7 @@
                                     </h6>
                             <ul class="nav nav-tabs" id="myTab" role="tablist">
                                 <li class="nav-item">
+
                                     <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Toplantı Detayları</a>
                                 </li>
                                 
@@ -138,7 +139,9 @@
                         </div>
                     </div>
                     <div class="col-md-2">
-                        <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"/>
+
+                        <a type="submit" class="profile-edit-btn" name="btnAddMore" value="Katılımcı Ekle" href="#" data-toggle="modal" data-target="#product">Katılımcı Ekle</a>
+
                     </div>
                 </div>
                 <div class="row">
@@ -199,6 +202,40 @@
                     </div>
                 </div>
             </form>           
+        </div>
+
+        <div class="modal fade" id="product">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                  <div class="modal-header">
+                      <h4>Toplantı Ekle</h4>
+                    </div>   
+                    <form method="POST">
+
+                            {% csrf_token %}
+                        <div class="row">
+                            <div class="modal-body">
+                                <label>Ofis / Online</label>
+                                <select name="new_member" class="form-control">
+                                    {% for member in new_members%}
+                                    <option name="new_member" value="{{member.username}}">{{member.username}}</option>
+                                    {% endfor %}
+                                </select> 
+                            </div>
+                        </div><br><br>
+                        
+                        <div class="row gutters">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="text-right">
+                                    <button type="submit" class="btn btn-black">Ekle</button>
+                                </div>
+                            </div>  
+                        </div>
+                    </form>                              
+                    
+                </div>
+                
+            </div>
         </div>
 <script type="text/javascript">
 

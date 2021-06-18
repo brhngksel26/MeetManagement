@@ -5,18 +5,19 @@ from django.contrib import messages
 from .decorators import unauthenticated_user
 from .models import Account,Meet,MeetParticipant
 from django.contrib.auth.decorators import login_required
-from datetime import date
 import plotly.figure_factory as ff
-from .utils import test
 import plotly
 import datetime
 from django.contrib import messages
 from datetimerange import DateTimeRange
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 
 # Create your views here.
 
+
 def index(request):
-    return render(request,'index.html')
+    return redirect('login')
 
 
 @unauthenticated_user
@@ -173,15 +174,47 @@ def meetDetails(request,title):
     accountInfo = Account.objects.get(user=request.user)
     meets = Meet.objects.filter(title=title).values()
     meeting = Meet.objects.get(title=title)
+    new_members = []
+    new_members_dict = {'username':'username'}
     members = []
+    accounts = User.objects.all().values('username')
+    
+
     for member in meeting.get_participant():
         members.append(member)
     
-    context = {'accountInfo':accountInfo,'meets':meets,'members':members}
+    for account in accounts:
+        account = str(account).replace("{'username': '","").replace("'}","")
+        new_members.append(account)
+
+    test = []
+    return_list = []
+    for added_member in members:
+        replace_str = title + "-"
+        added_member = str(added_member).replace(replace_str,"")
+        test.append(added_member)
+
+    unregisteredList = (set(new_members) - set(test))
+    for unregistered in unregisteredList:
+        if unregistered != 'admin':
+            new_members_dict.update({'username':unregistered})
+            return_list.append(dict(new_members_dict)) 
+    
+   
+
+    if request.method == 'POST':
+        addMembers = MeetParticipant.objects.create(
+            meet = meeting,
+            participant = User.objects.get(username = request.POST['new_member']),
+        )
+        addMembers.save()
+        messages = str(request.user) + "tarafından " + str(meets.get('title')) + "başlıklı toplantıya eklendiniz."+"Toplantı" +str(meets.get('start_date'))+"/"+str(meets.get('finish_date'))+ "Tarihleri arasındadır."
+        email = User.objects.filter(id=request.POST['new_member']).values('email')
+        send_mail("Toplantı Hatırlatma",messages,"brainsforce@gmail.com",[email],fail_silently=False)
+        return redirect(request.META['HTTP_REFERER'])
+    
+    context = {'accountInfo':accountInfo,'meets':meets,'members':members,'new_members':return_list}
     return render(request,"meets.html",context)
 
 
 
-@login_required(login_url='login')
-def calendar(request):
-    return render(request,"calender.html")
